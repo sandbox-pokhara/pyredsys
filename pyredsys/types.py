@@ -1,24 +1,29 @@
-from typing import Annotated, Any, Literal
+from typing import Annotated, Any
 from urllib.parse import unquote
 
 from pydantic import BaseModel, Field, HttpUrl, field_serializer, field_validator
 
 
 class MerchantParameters(BaseModel):
-    DS_MERCHANT_ORDER: Annotated[str, Field(max_length=12)]
-    DS_MERCHANT_MERCHANTCODE: int
-    DS_MERCHANT_TERMINAL: int
-    DS_MERCHANT_CURRENCY: int
-    DS_MERCHANT_TRANSACTIONTYPE: int
-    DS_MERCHANT_AMOUNT: int
-    DS_MERCHANT_MERCHANTURL: HttpUrl
-    DS_MERCHANT_URLOK: HttpUrl
-    DS_MERCHANT_URLKO: HttpUrl
+    # Read https://pagosonline.redsys.es/desarrolladores-inicio/integrate-con-nosotros/parametros-de-entrada-y-salida/
+    DS_MERCHANT_ORDER: Annotated[
+        str, Field(max_length=12, min_length=4, pattern=r"^[0-9]{4}[0-9A-Za-z]{0,8}$")
+    ]
+    DS_MERCHANT_MERCHANTCODE: Annotated[int, Field(le=999999999)]  # 9 digits max
+    DS_MERCHANT_TERMINAL: Annotated[int, Field(le=999)]  # 3 digits max
+    DS_MERCHANT_CURRENCY: Annotated[int, Field(le=9999)]  # 4 digits max
+    DS_MERCHANT_TRANSACTIONTYPE: Annotated[int, Field(le=9)]  # 1 digit max
+    DS_MERCHANT_AMOUNT: Annotated[int, Field(le=999999999999)]  # 12 digits max
+    DS_MERCHANT_MERCHANTURL: Annotated[HttpUrl, Field(max_length=250)]
+    DS_MERCHANT_URLOK: Annotated[HttpUrl, Field(max_length=250)]
+    DS_MERCHANT_URLKO: Annotated[HttpUrl, Field(max_length=250)]
 
     # Optional fields, these are excluded, unless explicitly set
 
     # TODO: find what these languages map to, 2 is english
-    DS_MERCHANT_CONSUMERLANGUAGE: Literal[0, 1, 2, 3, 7, 8, 9, 15, 17, 34, 37] = 0
+    DS_MERCHANT_CONSUMERLANGUAGE: Annotated[int, Field(le=999)] = 2
+    DS_MERCHANT_MERCHANTDATA: Annotated[str, Field(max_length=1024)] = ""
+    DS_MERCHANT_PRODUCTDESCRIPTION: Annotated[str, Field(max_length=125)] = ""
 
     @field_serializer(
         "DS_MERCHANT_MERCHANTCODE",
