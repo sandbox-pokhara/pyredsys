@@ -6,20 +6,26 @@ from pydantic import BaseModel, Field, HttpUrl, field_serializer, field_validato
 
 class MerchantParameters(BaseModel):
     # Read https://pagosonline.redsys.es/desarrolladores-inicio/integrate-con-nosotros/parametros-de-entrada-y-salida/
-    DS_MERCHANT_ORDER: Annotated[
-        str, Field(max_length=12, min_length=4, pattern=r"^[0-9]{4}[0-9A-Za-z]{0,8}$")
-    ]
+
+    # minimum length for order is not mentioned in documentation but it fails with
+    # order length less than 4, so min_length is specified here
+    DS_MERCHANT_ORDER: Annotated[str, Field(min_length=4, max_length=12)]
     DS_MERCHANT_MERCHANTCODE: Annotated[int, Field(le=999999999)]  # 9 digits max
     DS_MERCHANT_TERMINAL: Annotated[int, Field(le=999)]  # 3 digits max
     DS_MERCHANT_CURRENCY: Annotated[int, Field(le=9999)]  # 4 digits max
     DS_MERCHANT_TRANSACTIONTYPE: Annotated[int, Field(le=9)]  # 1 digit max
     DS_MERCHANT_AMOUNT: Annotated[int, Field(le=999999999999)]  # 12 digits max
-    DS_MERCHANT_MERCHANTURL: Annotated[HttpUrl, Field(max_length=250)]
-    DS_MERCHANT_URLOK: Annotated[HttpUrl, Field(max_length=250)]
-    DS_MERCHANT_URLKO: Annotated[HttpUrl, Field(max_length=250)]
 
     # Optional fields, these are excluded, unless explicitly set
-
+    DS_MERCHANT_MERCHANTURL: Annotated[HttpUrl, Field(max_length=250)] = HttpUrl(
+        "https://example.com/webhook"
+    )
+    DS_MERCHANT_URLOK: Annotated[HttpUrl, Field(max_length=250)] = HttpUrl(
+        "https://example.com/success"
+    )
+    DS_MERCHANT_URLKO: Annotated[HttpUrl, Field(max_length=250)] = HttpUrl(
+        "https://example.com/failure"
+    )
     # TODO: find what these languages map to, 2 is english
     DS_MERCHANT_CONSUMERLANGUAGE: Annotated[int, Field(le=999)] = 2
     DS_MERCHANT_MERCHANTDATA: Annotated[str, Field(max_length=1024)] = ""
@@ -63,7 +69,6 @@ class NotificationParameters(BaseModel):
     Ds_Card_Typology: str
     Ds_Merchant_Cof_Txnid: int
     Ds_ProcessedPayMethod: int
-    Ds_Control_1752472475397: int
 
     @field_validator("Ds_Date", "Ds_Hour", mode="before")
     @classmethod

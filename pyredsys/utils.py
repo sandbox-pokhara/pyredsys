@@ -26,10 +26,15 @@ def generate_diversified_key(secret_key: str, order_number: str):
     encrypted = encryptor.update(padded_order) + encryptor.finalize()
 
     # Step 4: Base64 encode the result
-    encrypted_b64 = base64.urlsafe_b64encode(encrypted)
+    encrypted_b64 = base64.b64encode(encrypted)
     return encrypted_b64
 
 
-def sign_hmac_sha512(key: bytes, data: bytes):
+def sign_hmac_sha512(key: bytes, data: bytes, urlsafe: bool = False):
+    # when requesting, urlsafe=False is used
+    # data from redsys notification however uses urlsafe=True
     signature = hmac.new(key, data, hashlib.sha512).digest()
-    return base64.urlsafe_b64encode(signature)
+    if urlsafe:
+        return base64.urlsafe_b64encode(signature)
+    else:
+        return base64.b64encode(signature)
