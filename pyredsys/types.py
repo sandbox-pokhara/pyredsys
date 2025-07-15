@@ -66,9 +66,6 @@ class NotificationParameters(BaseModel):
     Ds_ConsumerLanguage: int
     Ds_AuthorisationCode: int
     Ds_Card_Brand: int
-    Ds_Card_Typology: str
-    Ds_Merchant_Cof_Txnid: int
-    Ds_ProcessedPayMethod: int
 
     @field_validator("Ds_Date", "Ds_Hour", mode="before")
     @classmethod
