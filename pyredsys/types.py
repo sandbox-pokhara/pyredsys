@@ -54,7 +54,6 @@ class NotificationParameters(BaseModel):
     Ds_Date: str
     Ds_Hour: str
     Ds_SecurePayment: int
-    Ds_Card_Country: int
     Ds_Amount: int
     Ds_Currency: int
     Ds_Order: str
@@ -69,6 +68,7 @@ class NotificationParameters(BaseModel):
     # optional fields, these are the fields that
     # redsys might not send
     Ds_Card_Brand: int | None = None
+    Ds_Card_Country: int | None = None
 
     @field_validator("Ds_Date", "Ds_Hour", mode="before")
     @classmethod
