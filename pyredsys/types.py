@@ -64,8 +64,11 @@ class NotificationParameters(BaseModel):
     Ds_MerchantData: str
     Ds_TransactionType: int
     Ds_ConsumerLanguage: int
-    Ds_AuthorisationCode: int
-    Ds_Card_Brand: int
+    Ds_AuthorisationCode: str
+
+    # optional fields, these are the fields that
+    # redsys might not send
+    Ds_Card_Brand: int | None = None
 
     @field_validator("Ds_Date", "Ds_Hour", mode="before")
     @classmethod
